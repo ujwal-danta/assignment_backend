@@ -1,0 +1,24 @@
+const mongoose = require('mongoose')
+const { Schema } = mongoose;
+
+const userSchema = new Schema({
+  name: String, 
+  password: String,
+  email: String,
+  role: String,
+  address: String,
+  messages: [
+    {
+        orderID : String,
+        to : String,
+        from : String,
+        quantity : String,
+        address: String,
+        transporter: String,
+        status: String
+    }
+  ]
+});
+
+const User = mongoose.model('User',userSchema)
+module.exports = User
