@@ -87,7 +87,7 @@ router.patch('/sendPrice',(req,res)=>{
             {
                 'messages.orderID' : orderDetails.orderID
             },
-            {$push: { messages: orderDetails }},
+            {$addToSet: { messages: orderDetails }},
             {new:true}
         )
     )
@@ -96,13 +96,29 @@ router.patch('/sendPrice',(req,res)=>{
     })
     .catch(err=>console.log(err))
 })
-// User.findByIdAndUpdate(
-//     {email : 'transporter1@gmail.com'},
-//     {$push: { messages: orderDetails }},
-//     {new:true}
-// )
 
 
+router.patch('/updateStatus',(req,res)=>{
+   
+    const {orderDetails,status} = req.body
+    orderDetails.status = status
+   
+    User.updateMany({
+        'messages.orderID' : orderDetails.orderID
+    },
+    { $set: {
+        'messages.$.status': status, 
+      }},
+    {new: true
+    }
+    )
+    .then(data=>{
+        res.status(200).json(data)
+    })
+    .catch(err=>{
+        console.log(err)
+    })
+})
 
 
 
