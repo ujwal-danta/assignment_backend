@@ -65,6 +65,32 @@ router.post('/getMessagebyOrderID',(req,res)=>{
     .catch(err=>console.log(err))
 })
 
+router.post('/getMessagebyToAndFrom',(req,res)=>{
+    const {to,from} = req.body
+    console.log(to,from)
+    User.find({
+        messages: {
+            $elemMatch: {
+                to: to,
+                from: from,
+            }
+        }
+    }).select({
+        messages : {
+            $elemMatch: {
+                to: to,
+                from: from
+            }
+        }
+    })
+    .then(data=>{
+        console.log(data)
+        res.send(data)
+    })
+    .catch(err=>console.log(err))
+})
+
+
 
 
 
