@@ -20,7 +20,12 @@ const userSchema = new Schema({
           type : Number,
           default: 0
         },
-        createdAt: String
+        createdAt: String,
+        status: {
+          type : String,
+          enum: ["pending","accepted","rejected"],
+          default: "pending"
+        }
     }
   ],
 });

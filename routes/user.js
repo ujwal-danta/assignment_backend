@@ -70,11 +70,37 @@ User.findOneAndUpdate({email: email},
 })
 
 router.patch('/sendPrice',(req,res)=>{
-    console.log(req.body)
+    console.log('req.body - ',req.body)
     const {orderDetails,cost} = req.body
     orderDetails.price = cost
-    
+    console.log('orderDetails - ',orderDetails)
+    User.findOneAndUpdate({
+        name : orderDetails.from
+    },
+    {$push: { messages: orderDetails }},
+    {
+        new: true
+    }
+    )
+    .then(
+        User.updateMany(
+            {
+                'messages.orderID' : orderDetails.orderID
+            },
+            {$push: { messages: orderDetails }},
+            {new:true}
+        )
+    )
+    .then(data=>{
+        res.status(200).json(data)
+    })
+    .catch(err=>console.log(err))
 })
+// User.findByIdAndUpdate(
+//     {email : 'transporter1@gmail.com'},
+//     {$push: { messages: orderDetails }},
+//     {new:true}
+// )
 
 
 
