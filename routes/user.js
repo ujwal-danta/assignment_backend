@@ -22,15 +22,51 @@ let dateAndTime = year + "-" + month + "-" + date + " " + hours + ":" + minutes 
 router.get('/orders/:id',(req,res)=>{
 const id = req.params.id
 User.findOne({
-    'messages.orderID' : id
-}).select({ messages: {$elemMatch: {id: req.body.id}}})
+    messages: {
+        $elemMatch: {
+            orderID: id
+        }
+    }
+}).select({
+    messages : {
+        $elemMatch: {
+            orderID: id
+        }
+    }
+})
 .then(data=>{
     // console.log(data)
     res.status(200).json(data.messages[0])
 })
 .catch(err=>console.log(err))
-
 })
+
+
+router.post('/getMessagebyOrderID',(req,res)=>{
+    const {search} = req.body
+    console.log('search ',search)
+    User.findOne({
+        messages: {
+            $elemMatch: {
+                orderID: search
+            }
+        }
+    }).select({
+        messages : {
+            $elemMatch: {
+                orderID: search
+            }
+        }
+    })
+    .then(data=>{
+        console.log(data)
+        res.send(data.messages[0])
+    })
+    .catch(err=>console.log(err))
+})
+
+
+
 
 router.post('/getUser',(req,res)=>{
     const {email} = req.body
@@ -70,6 +106,7 @@ User.findOneAndUpdate({email: email},
 })
 
 router.patch('/sendPrice',(req,res)=>{
+    console.log('send price called')
     console.log('req.body - ',req.body)
     const {orderDetails,cost} = req.body
     orderDetails.price = cost
@@ -83,12 +120,14 @@ router.patch('/sendPrice',(req,res)=>{
     }
     )
     .then(
-        User.updateMany(
-            {
-                'messages.orderID' : orderDetails.orderID
-            },
-            {$addToSet: { messages: orderDetails }},
-            {new:true}
+        User.updateMany({
+            'messages.orderID' : orderDetails.orderID
+        },
+        { $set: {
+            'messages.$.price': cost, 
+          }},
+        {new: true
+        }
         )
     )
     .then(data=>{
@@ -98,8 +137,7 @@ router.patch('/sendPrice',(req,res)=>{
 })
 
 
-router.patch('/updateStatus',(req,res)=>{
-   
+router.patch('/updateStatus',(req,res)=>{ 
     const {orderDetails,status} = req.body
     orderDetails.status = status
    
