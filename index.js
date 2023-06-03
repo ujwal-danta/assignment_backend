@@ -3,7 +3,10 @@ const app = express()
 const connectDB = require('./db/connect')
 const cors = require('cors')
 const User = require('./models/user')
+const router = require('./routes/user')
 app.use(cors())
+
+
 
 // For parsing application/json
 app.use(express.json());
@@ -11,8 +14,11 @@ app.use(express.json());
 // For parsing application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
 
+app.use('/api',router)
+
+// register user
 app.post('/register',(req,res)=>{
-    const {name,email,password,role} = req.body
+    const {name,email,password,role,address} = req.body
     User.findOne({
         email : email
     })
@@ -22,7 +28,8 @@ app.post('/register',(req,res)=>{
                 name,
                 password,
                 email,
-                role
+                role,
+                address
             })
             newUser.save()
             .then(data=>{
@@ -45,6 +52,7 @@ app.post('/register',(req,res)=>{
 
 })
 
+// login user
 app.post('/login',(req,res)=>{
     const {email,password} = req.body
     User.findOne({
@@ -73,7 +81,11 @@ app.post('/login',(req,res)=>{
 
 })
 
-app.listen(3001,()=>{
-    console.log('Server running on port 3000')
-    connectDB()
+
+
+
+
+app.listen(3001,async ()=>{
+    await connectDB()
+    console.log('Server running on port 3001')
 })

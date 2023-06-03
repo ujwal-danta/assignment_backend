@@ -15,9 +15,14 @@ const userSchema = new Schema({
         quantity : String,
         address: String,
         transporter: String,
-        status: String
+        status: String,
+        price : {
+          type : Number,
+          default: 0
+        },
+        createdAt: String
     }
-  ]
+  ],
 });
 
 const User = mongoose.model('User',userSchema)
